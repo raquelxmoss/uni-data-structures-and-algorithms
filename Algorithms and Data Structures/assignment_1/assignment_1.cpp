@@ -1,26 +1,17 @@
-// 159201 assignment 1 skeleton
-// You need to add your own AddNode and PrintLL functions, as well as an AddMatrices function
-//
+// Raquel Moss
+// ID: 22001105
 // Hello!
 // Thank you for marking my assignment.
 // You might notice some changes to the skeleton code, and a few quirks in how I write things.
-// This is because I'm a professional software developer -- I've been working with Ruby and
-// Javascript for the last 7 years, and I'm accustomed to some naming and style conventions from my work.
+// In my day job, I'm a software developer working with higher-level languages (mostly Ruby
+// and JavaScript). I'm accustomed to some naming and style conventions through my work, so
+// you might see them here.
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-
-
-// TODO
-// X add_node function
-// X add_matrices function
-// X print_matrix function
-// X print all 3 matricies (inputs, output)
-// X print_linked_list in order
-//   refactor to remove length variables
 
 using namespace std;
 
@@ -33,10 +24,11 @@ struct Node {
 
 Node *A, *B, *Result;
 
-// TODO can I do this without globals
-int column_number = 0, row_number = 0;
+int number_of_columns = 0, number_of_rows = 0;
 
 void reverse_list(Node * &listpointer) {
+  if (listpointer == NULL) { return; }
+
   Node *temp1, *temp2, *temp3;
   temp2 = listpointer;
   temp3 = listpointer->next;
@@ -68,14 +60,8 @@ Node* search_matrix(Node * matrix, int row, int column) {
   current = matrix;
 
   while (true) {
-    if (current == NULL) {
-      break;
-    }
-
-    if (current->row == row && current->column == column) {
-      return current;
-    }
-
+    if (current == NULL) { break; }
+    if (current->row == row && current->column == column) { return current; }
     current = current->next;
   }
 
@@ -83,18 +69,8 @@ Node* search_matrix(Node * matrix, int row, int column) {
 }
 
 void add_matricies(Node * matrix_1, Node * matrix_2) {
-  if (matrix_1 == NULL || matrix_2 == NULL) {
-    printf("Cannot add empty matrices\n");
-
-    return;
-  }
-
-  // TODO
-  // if matrix_1.length != matrix_2.length
-  // return
-
-  for (int row = 0; row < row_number; ++row) {
-    for (int col = 0; col < column_number; ++col) {
+  for (int row = 0; row < number_of_rows; ++row) {
+    for (int col = 0; col < number_of_columns; ++col) {
       Node* matrix_1_node = search_matrix(matrix_1, row, col);
       Node* matrix_2_node = search_matrix(matrix_2, row, col);
 
@@ -125,27 +101,20 @@ void add_matricies(Node * matrix_1, Node * matrix_2) {
   reverse_list(Result);
 }
 
-void print_matrix(Node * listpointer, int row_number, int column_number) {
+void print_matrix(Node * listpointer) {
   Node *current;
   current = listpointer;
 
-  for (int row = 0; row < row_number; ++row) {
-    for (int col = 0; col < column_number; ++col) {
-      Node* value = search_matrix(current, row, col);
+  for (int row_index = 0; row_index < number_of_rows; ++row_index) {
+    for (int col_index = 0; col_index < number_of_columns; ++col_index) {
+      Node* value = search_matrix(current, row_index, col_index);
+      int output = value ? value->value : 0;
 
-      if (value) {
-        printf("%i ", value->value);
-      } else {
-        printf("0 ");
-      }
-
-      if (col == column_number - 1) {
-        printf("\n");
-      }
+      printf("%i ", output);
     }
-  }
 
-  printf("\n");
+    printf("\n");
+  }
 }
 
 void read_matrix(Node* &a, char *file_name) {
@@ -159,25 +128,25 @@ void read_matrix(Node* &a, char *file_name) {
 
   string line;
 
-  // reads the first line to get dimensions of the matrix
   if (input.good()) {
     getline(input, line);
     stringstream sline(line);
-    sline >> row_number >> column_number;
+    sline >> number_of_rows >> number_of_columns;
   }
 
   int value = 0;
 
-  for (int row = 0; row < row_number; ++row) {
+  for (int row = 0; row < number_of_rows; ++row) {
     if (input.good()) {
       getline(input, line);
       stringstream sline(line);
 
-      for (int col = 0; col < column_number; ++col) {
+      for (int col = 0; col < number_of_columns; ++col) {
         sline >> value;
-        if (value == 0) continue;
 
-        add_node(a, row, col, value);
+        if (value != 0) {
+          add_node(a, row, col, value);
+        }
       }
     }
   }
@@ -192,12 +161,9 @@ void print_linked_list(Node * list) {
   current = list;
 
   while (true) {
-    if (current == NULL) {
-      break;
-    }
+    if (current == NULL) { break; }
 
     printf("%i ", current->value);
-
     current = current->next;
   }
 }
@@ -206,17 +172,17 @@ void print_matricies(Node * matrix_1, Node * matrix_2, Node * matrix_3) {
   printf("Matrix 1: ");
   print_linked_list(matrix_1);
   printf("\n");
-  print_matrix(A, row_number, column_number);
+  print_matrix(A);
 
   printf("Matrix 2: ");
   print_linked_list(matrix_2);
   printf("\n");
-  print_matrix(B, row_number, column_number);
+  print_matrix(B);
 
   printf("Matrix Result: ");
   print_linked_list(matrix_3);
   printf("\n");
-  print_matrix(Result, row_number, column_number);
+  print_matrix(Result);
 }
 
 int main(int argc, char** argv) {
