@@ -64,7 +64,7 @@ class Stack {
       if (!isEmpty()) {
         return listpointer->data;
       } else {
-        return -1; // todo what to return?
+        return -1;
       }
     };
 
