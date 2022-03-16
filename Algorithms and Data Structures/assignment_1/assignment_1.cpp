@@ -194,3 +194,5 @@ int main(int argc, char** argv) {
 
   print_matricies(A, B, Result);
 }
+
+// test6 -- expected 8, got 21
