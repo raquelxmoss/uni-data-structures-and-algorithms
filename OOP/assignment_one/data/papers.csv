@@ -1,0 +1,8 @@
+Number,Name,Belongs to the following major(s),Assignments,Tests,Exam
+158100,Information Technology Principles,IT\,IS,0.7,0.3
+158120,Web-based IT Fundamentals,IT\,IS,0.6,0.4
+159101,Applied Programming,IT\,IS\,CS\,DS\,SE,0.5,0.1,0.4
+159201,Algorithms and Data Structures,CS\,DS\,SE\,IS,0.4,0.2,0.4
+159234,Object-Oriented Programming,CS\,SE,0.5,0.1,0.4
+158337,Database Development,IT\,SE\,DS,0.6,,0.4
+158345,Professionalism in the Information Sciences,IT\,IS\,CS\,DS\,SE,1
