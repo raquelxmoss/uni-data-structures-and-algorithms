@@ -1,16 +1,3 @@
-// Hello Ryan
-// I am very sad.
-//
-// Okay, first thing to know is that I didn't write most of the code. It's the skeleton
-// they gave us, which is why the spacing and indentaiton is so chaotic and everything is
-// wild.
-//
-// Usually I re-write the skeletons into something more useable, but because they don't give
-// specs and so when I tried that this time, I accidentally introduced a bug.
-//
-// So, fuck it, we're rolling with the bad skeleton.
-// There's also a lot of comments in the skeleton. Ones actually written by me are marked
-// with "// *"
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -19,9 +6,8 @@
 #include <string>
 using namespace std;
 
-// * I implemented the Node and Queue
 struct Node {
-  float data;
+  int data;
   Node *next;
 };
 
@@ -38,7 +24,8 @@ class Queue {
 
     ~Queue() { };
 
-    void Join(float new_item) {
+    void Join(int new_item) {
+      length++;
       Node *temp;
       temp = new Node;
       temp->data = new_item;
@@ -47,13 +34,11 @@ class Queue {
       if (rear != NULL) { rear->next = temp; }
       rear = temp;
       if (front == NULL) { front = temp; }
-
-      ++length;
     };
 
     void Leave() {
+      length--;
       if (isEmpty()) { return; }
-      length = length - 1;
 
       Node * temp;
       if (front == NULL) { return; }
@@ -63,7 +48,7 @@ class Queue {
       delete temp;
     };
 
-    float Front() {
+    int Front() {
       return front->data;
     };
 
@@ -77,46 +62,43 @@ class Queue {
     };
 };
 
-
-
-
-////////////////////////////////////////////////////////////////////////
-
 #define TIMEDELAY 3 //DO NOT CHANGE THIS VALUE!!!
 #define N 128 //DO NOT CHANGE THIS VALUE!!!
-int OutQueues_current[N];
-int Congestion_Size[N];
 
-/*include your array of queues declarations somewhere here, for example: */
+int MaximumCongestionTotals[N];
+int OutputQueuesCurrentTotals[N];
+
 Queue InputQueues[N];
 Queue OutputQueues[N];
 
 void init_simulation(){
-  for(int a=0;a<N;a++){
-    OutQueues_current[a]=0;
-    Congestion_Size[a]=0;
+  for(int a = 0; a < N; a++) {
+    OutputQueuesCurrentTotals[a] = 0;
+    MaximumCongestionTotals[a] = 0;
   }
 }
 
-int sum_elements_array(int array[]){
-  int sum=0;
-  for(int a=0;a<N;a++){
-    sum=sum+array[a];
+int sum_array(int array[]) {
+  int sum = 0;
+  for(int a = 0; a < N; a++) {
+    sum = sum + array[a];
   }
   return sum;
 }
 
-int number_of_ports=0;
+int number_of_ports = 0;
 
-int main(int argc, char** argv){//get arguments from command line, the name of the simulation text file
-  //read the file, print the input ports contents
-  int portnumber=0;
-  int destination=0;
-  //char oper;
+int main(int argc, char** argv) {
+  int portnumber = 0;
   string expression;
   string geninput;
   ifstream input_file;
-  if(argc!=2) {cout<< "Type a file name. " << endl << argv[1] << endl; exit(0);}
+
+  if (argc != 2) {
+    cout<< "Type a file name. " << endl << argv[1] << endl;
+    exit(0);
+  }
+
   input_file.open(argv[1]);
   if(input_file.is_open()==false) {cout << "Could not read file: " << endl << argv[1] << endl; exit(0);}
   string token;
@@ -136,7 +118,7 @@ int main(int argc, char** argv){//get arguments from command line, the name of t
      // * or array indexes in the array of ports (starting at 0). Who fucking knows.
      portnumber++;
 
-     cout << "Port " << portnumber << ": " << endl;//DEBUG, comment for final version
+     cout << "Port " << portnumber + 1 << ": " << endl;//DEBUG, comment for final version
 
      while(getline(line, token,' ')){
        int destination;
@@ -144,12 +126,12 @@ int main(int argc, char** argv){//get arguments from command line, the name of t
        if (destination < 0 || destination > number_of_ports || number_of_ports<portnumber) {cout << "ERROR in the format of the text file" << endl; exit(0);}
 
        // * hey look finally some code I wrote. Just adding an item to the input queue.
-       InputQueues[portnumber].Join(destination);
+       InputQueues[portnumber - 1].Join(destination);
      }
      int sumofinputpackets=0;
      // * And checking the length of the queues, this is just for debugging I think,
      // * Idk, this skeleton is dumb
-     sumofinputpackets += InputQueues[portnumber].Length();
+     sumofinputpackets += InputQueues[portnumber - 1].Length();
      cout<< "Input packets at input queue for port "<< portnumber << " = " << sumofinputpackets << endl;//DEBUG, comment for final version
      cout<< "if this value is still zero, it is because you did not implement the queues yet..." << endl;//DEBUG, comment for final version
   }
@@ -159,7 +141,7 @@ int main(int argc, char** argv){//get arguments from command line, the name of t
   getline(cin, geninput);// pause //DEBUG, comment for final version
   init_simulation();
   unsigned long int clock=0;
-  unsigned long int currentsum=99999999;//sum_elements_array(OutQueues_current);
+  unsigned long int currentsum=99999999; //sum_array(OutputQueuesCurrentTotals);
   portnumber=0;
 
   while (currentsum > 0) {
@@ -168,54 +150,54 @@ int main(int argc, char** argv){//get arguments from command line, the name of t
     if(portnumber > (number_of_ports-1)) portnumber=0;
 
     // * here's some code from me
-    if (!InputQueues[portnumber].isEmpty()){
+    if (!InputQueues[portnumber - 1].isEmpty()){
       // * The trouble that I'm running into is that even after I add
       // * something to the queue with Join() in this while loop,
       // * it doesn't seem to add properly/the length doesn't increment
       // * and I don't know why.
       // * I've tried various access by value/reference/assigning to a variable
       // * and I'm lost.
-      int destination = InputQueues[portnumber].Front();
-      Queue &output_queue = OutputQueues[destination];
 
       // join the output queue
-      output_queue.Join(destination);
-      cout << "length? " << output_queue.Length() << endl;
+      OutputQueues[InputQueues[portnumber - 1].Front() - 1].Join(InputQueues[portnumber - 1].Front() - 1);
 
-      // * update the current total for the output queue. OutQueues_current is terribly named.
-      OutQueues_current[destination] = OutputQueues[destination].Length();
+      // * update the current total for the output queue. OutputQueuesCurrentTotals is terribly named.
+      OutputQueuesCurrentTotals[InputQueues[portnumber - 1].Front() - 1] = OutputQueues[InputQueues[portnumber - 1].Front() - 1].Length();
       // * leave the input queue
-      OutputQueues[destination].Leave();
+      InputQueues[portnumber - 1].Leave();
+      InputQueues_lengths[portnumber - 1] = InputQueues[portnumber - 1].Length();
     }
+
 
     clock++;
 
     if(clock % (TIMEDELAY*number_of_ports) == 0 && clock!=0) { //DO NOT MODIFY THIS LINE!
-      cout << "Packets can leave the output queues at " << clock << " microsec " << endl;//DEBUG, comment for final version
-      for(int a=0;a<number_of_ports;a++){
-        //Delete 1 packet from each queue and count number of packets again
+      // cout << "Packets can leave the output queues at " << clock << " microsec " << endl;//DEBUG, comment for final version
+      for(int a = 0; a < number_of_ports; a++){
+        //Delete 1 packet from each queue
         OutputQueues[a].Leave();
 
         /* and count number of packets again */
-        Congestion_Size[a] = OutputQueues[a].Length();
+        MaximumCongestionTotals[a] = OutputQueues[a].Length();
       }
     }
     //
     // include the queue updates for the simulation
     //
-    //
+    // As there are no more packets in the input queues, this is the point of maximum congestion.
     //compute the current state of the output queues
     // cout << "Current sum: " << currentsum << endl;//DEBUG, comment for final version
-    /* currentsum = sum_elements_array(OutQueues_current); */
 
-    if(currentsum > sum_elements_array(Congestion_Size)){
+    currentsum = sum_array(InputQueues_lengths);
+
+    if(currentsum > sum_array(MaximumCongestionTotals)){
       for(int a=0;a<number_of_ports;a++){
-        Congestion_Size[a]=OutQueues_current[a];
+        MaximumCongestionTotals[a]=OutputQueuesCurrentTotals[a];
       }
     }
   }
   //FINAL PRINTOUT, remember to comment out all the other debugging printouts above
   for(int a=0;a<number_of_ports;a++){
-    cout << "output port " << a+1 << ": " << Congestion_Size[a] << " packets" << endl;
+    cout << "output port " << a+1 << ": " << MaximumCongestionTotals[a] << " packets" << endl;
   }
 }
