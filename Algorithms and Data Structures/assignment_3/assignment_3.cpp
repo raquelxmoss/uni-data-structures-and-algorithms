@@ -147,24 +147,27 @@ int main(int argc, char** argv) {
   unsigned long int OutputQueuesCurrentTotalsSum = 99999999;
   portnumber = 0;
 
-  // until the output queues empty out
   while (OutputQueuesCurrentTotalsSum > 0) {
     // portnumber code is chaotic but I'm not changing it
     portnumber++;
     if (portnumber > (number_of_ports-1)) portnumber = 0;
 
-    // todo try using this next
-    /* Queue & input_queue = InputQueues[portnumber - 1]; */
+    Queue & input_queue = InputQueues[portnumber - 1];
 
-    if (!InputQueues[portnumber - 1].isEmpty()){
+    if (!input_queue.isEmpty()){
+      int output_queue_index = input_queue.Front() - 1;
+      int value_to_move = input_queue.Front();
+
+      Queue & output_queue = OutputQueues[output_queue_index];
+      
       // join the output queue
-      OutputQueues[InputQueues[portnumber - 1].Front() - 1].Join(InputQueues[portnumber - 1].Front() - 1);
+      output_queue.Join(value_to_move);
 
-      // update the current total for the output queue. OutputQueuesCurrentTotals is terribly named.
-      OutputQueuesCurrentTotals[InputQueues[portnumber - 1].Front() - 1] = OutputQueues[InputQueues[portnumber - 1].Front() - 1].Length();
+      // update the current total for the output queue.
+      OutputQueuesCurrentTotals[output_queue_index] = output_queue.Length();
 
       // leave the input queue
-      InputQueues[portnumber - 1].Leave();
+      input_queue.Leave();
     }
 
     clock++;
@@ -185,6 +188,11 @@ int main(int argc, char** argv) {
     // if so, let's update the maximum totals
     if (OutputQueuesCurrentTotalsSum > sum_array(MaximumCongestionTotals)) {
       for (int a = 0; a < number_of_ports; a++) {
+        cout << "clock" << clock << endl;
+        cout << "updading maximum congestion" << endl;
+        cout << "output queue (0 index): " << a << endl;
+        cout << "total: " << OutputQueuesCurrentTotals[a] << endl;
+        
         MaximumCongestionTotals[a] = OutputQueuesCurrentTotals[a];
       }
     }
