@@ -157,16 +157,11 @@ int main(int argc, char** argv) {
       output_queue.Join(value_to_move);
 
       // update the current total for the output queue.
-      OutputQueuesCurrentTotals[output_queue_index] = output_queue.Length();
+      OutputQueuesCurrentTotals[output_queue_index] = OutputQueues[output_queue_index].Length();
 
       // leave the input queue
       input_queue.Leave();
     }
-
-    // portnumber code is chaotic but I'm not changing it
-    portnumber++;
-    if (portnumber > (number_of_ports-1)) portnumber = 0;
-    clock++;
 
     if (clock % (TIMEDELAY*number_of_ports) == 0 && clock != 0) { //DO NOT MODIFY THIS LINE!
       for(int a = 0; a < number_of_ports; a++) {
@@ -177,17 +172,20 @@ int main(int argc, char** argv) {
       }
     }
 
-    // update the current totals of the output queues
+       // update the current totals of the output queues
+
     OutputQueuesCurrentTotalsSum = sum_array(OutputQueuesCurrentTotals);
     // are the current totals larger than what we currently have recorded?
     // if so, let's update the maximum totals
-    int max_sum = sum_array(MaximumCongestionTotals);
-    
-    if (OutputQueuesCurrentTotalsSum > max_sum) {
+    if (OutputQueuesCurrentTotalsSum > sum_array(MaximumCongestionTotals)) {
       for (int a = 0; a < number_of_ports; a++) {        
         MaximumCongestionTotals[a] = OutputQueuesCurrentTotals[a];
       }
     }
+    // portnumber code is chaotic but I'm not changing it
+    portnumber++;
+    if (portnumber > (number_of_ports-1)) portnumber = 0;
+    clock++;
   }
 
   for (int a = 0; a < number_of_ports; a++) {

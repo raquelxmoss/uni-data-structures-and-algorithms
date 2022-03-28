@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/assignment_3",
-            "args": ["sample_data/thing.txt"],
+            "args": ["sample_data/simulation3ports.txt"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],
