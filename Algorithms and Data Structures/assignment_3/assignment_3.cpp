@@ -1,3 +1,12 @@
+// Raquel Moss
+// ID: 22001105
+// Hello!
+// Thank you for marking my assignment.
+// You might notice some changes to the skeleton code, and a few quirks in how I write things.
+// In my day job, I'm a software developer working with higher-level languages (mostly Ruby
+// and JavaScript). I'm accustomed to some naming and style conventions through my work, so
+// you might see them here.
+
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -152,37 +161,26 @@ int main(int argc, char** argv) {
       int value_to_move = input_queue.Front();
 
       Queue & output_queue = OutputQueues[output_queue_index];
-      
-      // join the output queue
       output_queue.Join(value_to_move);
-
-      // update the current total for the output queue.
       OutputQueuesCurrentTotals[output_queue_index] = OutputQueues[output_queue_index].Length();
 
-      // leave the input queue
       input_queue.Leave();
     }
 
     if (clock % (TIMEDELAY*number_of_ports) == 0 && clock != 0) { //DO NOT MODIFY THIS LINE!
       for(int a = 0; a < number_of_ports; a++) {
-        // Delete 1 packet from each queue
         OutputQueues[a].Leave();
-        // Update the queue's current total
         OutputQueuesCurrentTotals[a] = OutputQueues[a].Length();
       }
     }
 
-       // update the current totals of the output queues
-
     OutputQueuesCurrentTotalsSum = sum_array(OutputQueuesCurrentTotals);
-    // are the current totals larger than what we currently have recorded?
-    // if so, let's update the maximum totals
+
     if (OutputQueuesCurrentTotalsSum > sum_array(MaximumCongestionTotals)) {
-      for (int a = 0; a < number_of_ports; a++) {        
+      for (int a = 0; a < number_of_ports; a++) {
         MaximumCongestionTotals[a] = OutputQueuesCurrentTotals[a];
       }
     }
-    // portnumber code is chaotic but I'm not changing it
     portnumber++;
     if (portnumber > (number_of_ports-1)) portnumber = 0;
     clock++;
