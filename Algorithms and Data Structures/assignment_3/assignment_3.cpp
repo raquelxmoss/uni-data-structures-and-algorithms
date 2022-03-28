@@ -131,7 +131,6 @@ int main(int argc, char** argv) {
       continue;
     }
 
-    // move this to the end of the while loop
     portnumber++;
 
     while (getline(line, token,' ')) {
