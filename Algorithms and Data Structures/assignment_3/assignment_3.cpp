@@ -139,20 +139,13 @@ int main(int argc, char** argv) {
   }
   // end reading input file contents
 
-  //cout << endl << "Start of the simulation, press a key " << endl << endl;
-  //getline(cin, geninput);
-
   init_simulation();
   unsigned long int clock = 0;
   unsigned long int OutputQueuesCurrentTotalsSum = 99999999;
   portnumber = 0;
 
   while (OutputQueuesCurrentTotalsSum > 0) {
-    // portnumber code is chaotic but I'm not changing it
-    portnumber++;
-    if (portnumber > (number_of_ports-1)) portnumber = 0;
-
-    Queue & input_queue = InputQueues[portnumber - 1];
+    Queue & input_queue = InputQueues[portnumber];
 
     if (!input_queue.isEmpty()){
       int output_queue_index = input_queue.Front() - 1;
@@ -170,6 +163,9 @@ int main(int argc, char** argv) {
       input_queue.Leave();
     }
 
+    // portnumber code is chaotic but I'm not changing it
+    portnumber++;
+    if (portnumber > (number_of_ports-1)) portnumber = 0;
     clock++;
 
     if (clock % (TIMEDELAY*number_of_ports) == 0 && clock != 0) { //DO NOT MODIFY THIS LINE!
@@ -183,16 +179,12 @@ int main(int argc, char** argv) {
 
     // update the current totals of the output queues
     OutputQueuesCurrentTotalsSum = sum_array(OutputQueuesCurrentTotals);
-
     // are the current totals larger than what we currently have recorded?
     // if so, let's update the maximum totals
-    if (OutputQueuesCurrentTotalsSum > sum_array(MaximumCongestionTotals)) {
-      for (int a = 0; a < number_of_ports; a++) {
-        cout << "clock" << clock << endl;
-        cout << "updading maximum congestion" << endl;
-        cout << "output queue (0 index): " << a << endl;
-        cout << "total: " << OutputQueuesCurrentTotals[a] << endl;
-        
+    int max_sum = sum_array(MaximumCongestionTotals);
+    
+    if (OutputQueuesCurrentTotalsSum > max_sum) {
+      for (int a = 0; a < number_of_ports; a++) {        
         MaximumCongestionTotals[a] = OutputQueuesCurrentTotals[a];
       }
     }
