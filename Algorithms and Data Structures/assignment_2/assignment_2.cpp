@@ -50,6 +50,18 @@ class Stack {
       listpointer = temp;
     };
 
+    void Remove(Node * & listpointer, int x) {//not all cases considered
+      Node *current, *prev; //why do we need 2 pointers? current = listpointer;
+      prev = NULL;
+      while (current != NULL) {
+        if (current->data == x) { break; }
+        prev = current;
+        current = current->next;
+      }
+      prev->next = current->next;
+      delete current;
+    };
+
     void pop() {
       Node *temp;
       temp = listpointer;
