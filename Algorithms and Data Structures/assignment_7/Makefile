@@ -1,5 +1,5 @@
 
-assignment_6: assignment_7.cpp
+assignment_7: assignment_7.cpp
 	g++ -g -o $@ $<
 
 clean:

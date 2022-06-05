@@ -10,15 +10,39 @@ vector<int> vector_random;
 vector<int> vector_reversed;
 vector<int> vector_sorted;
 
-/*  Implement a Heap class here (from the slides)  */
 class Heap {
   private:
     vector<int> data;
     int last_index;
+    int insert_comparisons;
+    int delete_comparisons;
+
   public:
-    Heap() { last_index =- 1; };
-   ~Heap() { };
-    void InsertHeap(int newthing) {
+    Heap() {
+      last_index = -1;
+      insert_comparisons = 0;
+      delete_comparisons = 0;
+    };
+
+    ~Heap(){};
+
+    int get_insert_comparisons() {
+      return insert_comparisons;
+    }
+
+    int get_delete_comparisons() {
+      return delete_comparisons;
+    }
+
+    int get_root() {
+      return data[0];
+    }
+
+    void print_heap() {
+      for (int i = 0; i < data.size(); i++) { cout << data[i] << " "; }
+    }
+
+    void insert_heap(int newthing) {
       data.push_back(newthing);
       last_index++;
 
@@ -32,122 +56,139 @@ class Heap {
         swapping = false;
 
         if (child_index % 2 == 0) {
-          // right
           parent_index = child_index / 2 - 1;
         } else {
-          // left
           parent_index = child_index / 2;
         }
 
-        if (parent_index >= 0 && data[child_index] > data[parent_index]) {
-          swap(data[child_index], data[parent_index]);
-          swapping = true;
-          child_index = parent_index;
+        if (parent_index >= 0) {
+          insert_comparisons++;
+          if (data[child_index] > data[parent_index]) {
+            swap(data[child_index], data[parent_index]);
+            swapping = true;
+            child_index = parent_index;
+          }
         }
       }
     };
 
-    bool Delete(int item);
+    void delete_root() {
+      if (last_index < 0) { return; }
+
+      data[0] = data[last_index];
+      data[last_index] = 0;
+      last_index--;
+
+      int parent_index = 0;
+      int left_index = parent_index * 2 + 1;
+      int right_index = parent_index * 2 + 2;
+
+      if (!data[left_index] && !data[right_index]) {
+        // no comparison
+      } else if (data[left_index] && data[right_index]) {
+        // data at both left and right
+        delete_comparisons += 2;
+      } else {
+        delete_comparisons++;
+      }
+
+      while (data[parent_index] < data[left_index] || data[parent_index] < data[right_index]) {
+        if (data[right_index] < data[left_index]) {
+          swap(data[left_index], data[parent_index]);
+          parent_index = left_index;
+        } else {
+          swap(data[right_index], data[parent_index]);
+          parent_index = right_index;
+        }
+
+        left_index = parent_index * 2 + 1;
+        right_index = parent_index * 2 + 2;
+
+        if (left_index > last_index) { break; }
+
+        if (!data[left_index] && !data[right_index]) {
+          // no comparison
+        } else if (data[left_index] && data[right_index]) {
+          // data at both left and right
+          delete_comparisons += 2;
+        } else {
+          delete_comparisons++;
+        }
+
+        if (right_index > last_index && data[parent_index] < data[left_index]) {
+          swap(data[parent_index], data[left_index]);
+          break;
+        }
+      }
+    }
 };
 
-/* this is a possible prototype for the heapsort function */
-/* the char* filename is just for printing the name, the file is opened and dealt with in the main() */
-void heapsort(vector<int> &sortingvector,int number_of_elements, char* filename){
-  use this -> "https://www.softwaretestinghelp.com/heap-sort/"
+void heapsort(vector<int> &sortingvector, int number_of_elements, char *filename) {
+  Heap heap;
 
-  /* Heap myHeap; .//declare a Heap instance here */
-  /* Using the sortingvector, INSERT elements into the Heap */
-  
-  
-  /* After building the heap from the file, PRINT the current state of the heap before sorting */
-  /* STORE how many comparisons were made until this point */
-  
-  /* DELETE elements from the Heap, copying it back to the vector in a way that it is sorted */
-  /* STORE how many comparisons were made for the deletion process */
-  
-  /* PRINT the number of comparisons for the Insert and Deletion tasks */
-  
-  /* Print the state of the vector after sorting */
-  
+  for (int i = 0; i < number_of_elements; i++) { heap.insert_heap(sortingvector[i]); }
+
+  cout << "Heap before sorting: " << filename << endl;
+  heap.print_heap();
+  cout << endl;
+
+  int insert_comparisons = heap.get_insert_comparisons();
+  cout << "InsertHeap: " << insert_comparisons << " comparisons" << endl;
+
+  for (int i = (number_of_elements - 1); i >= 0; i--) {
+    sortingvector[i] = heap.get_root();
+    heap.delete_root();
+  }
+
+  int delete_comparisons = heap.get_delete_comparisons();
+  cout << "DeleteRoot: " << delete_comparisons << " comparisons" << endl;
+  cout << "Vector after sorting:" << endl;
+
+  for (size_t i = 0; i < number_of_elements; i++) { cout << sortingvector[i] << " "; }
+  cout << endl;
 }
 
+int main(int argc, char **argv) {
+  char expression[100];
+  int number;
+  ifstream input_file_random;
+  ifstream input_file_reversed;
+  ifstream input_file_sorted;
 
-
-
-int main(int argc, char** argv) {
-	char expression[100];
-	int number;
-	ifstream input_file_random;
-	ifstream input_file_reversed;
-	ifstream input_file_sorted;
-	
   if (argc == 4) {
-	  input_file_random.open(argv[1]);
-	  input_file_reversed.open(argv[2]);
-	  input_file_sorted.open(argv[3]);
-	} else {
-	  printf("The program needs 3 filenames, in this order: random, reversed and sorted.\n");
+    input_file_random.open(argv[1]);
+    input_file_reversed.open(argv[2]);
+    input_file_sorted.open(argv[3]);
+  } else {
+    printf("The program needs 3 filenames, in this order: random, reversed and sorted.\n");
     exit(0);
-	}
+  }
 
-	int number_of_elements_random = 0;
+  int number_of_elements_random = 0;
 
-	while (input_file_random >> number) {
-		sscanf(expression,"%d",&number);
-		/*Comment out this printout, this is just to check that the file can be read */
-    //		printf("%d ",number );	
-		vector_random.push_back(number);
-		number_of_elements_random++;
-	}
+  while (input_file_random >> number) {
+    sscanf(expression, "%d", &number);
+    vector_random.push_back(number);
+    number_of_elements_random++;
+  }
 
-	/*Comment out this printout, this is just to check that the array was copied */
-	printf("File %s:\n", argv[1]);
+  int number_of_elements_reversed = 0;
+  while (input_file_reversed >> number) {
+    sscanf(expression, "%d", &number);
+    vector_reversed.push_back(number);
+    number_of_elements_reversed++;
+  }
 
-	for (int count = 0; count < number_of_elements_random; count++) {
-		printf("%d ",vector_random[count]);
-	}
-	printf("\n");
-	/*end printout*/
+  int number_of_elements_sorted = 0;
+  while (input_file_sorted >> number) {
+    sscanf(expression, "%d", &number);
+    vector_sorted.push_back(number);
+    number_of_elements_sorted++;
+  }
 
-	int number_of_elements_reversed = 0;
-	while(input_file_reversed >> number) {
-		sscanf(expression,"%d",&number);
-		/*Comment out this printout, this is just to check that the file can be read */
-//		printf("%d ",number );	
-		vector_reversed.push_back(number);
-		number_of_elements_reversed++;
-	}
-	/*Comment out this printout, this is just to check that the array was copied */
-	printf("File %s:\n", argv[2]);
-	for(int count=0;count<number_of_elements_reversed;count++){
-		printf("%d ",vector_reversed[count]);
-	}
-	printf("\n");
-	/*end printout*/
-
-
-	int number_of_elements_sorted = 0;
-	while(input_file_sorted >> number) {
-		sscanf(expression,"%d",&number);
-		/*Comment out this printout, this is just to check that the file can be read */
-//		printf("%d ",number );	
-		vector_sorted.push_back(number);
-		number_of_elements_sorted++;
-	}
-	/*Comment out this printout, this is just to check that the array was copied */
-	printf("File %s:\n", argv[3]);
-	for(int count = 0; count < number_of_elements_sorted; count++){
-		printf("%d ",vector_sorted[count]);
-	}
-	printf("\n");
-	/*end printout*/
-
-
-	/* Implement or call your Heap sort here, the Heap class with methods should be copied/implemented before main() */
-	heapsort(vector_random, number_of_elements_random, argv[1]);
-	cout << endl;
-	heapsort(vector_reversed, number_of_elements_reversed, argv[2]);
-	cout << endl;
-	heapsort(vector_sorted, number_of_elements_sorted, argv[3]);
-	
+  heapsort(vector_random, number_of_elements_random, argv[1]);
+  cout << endl;
+  heapsort(vector_reversed, number_of_elements_reversed, argv[2]);
+  cout << endl;
+  heapsort(vector_sorted, number_of_elements_sorted, argv[3]);
 }
